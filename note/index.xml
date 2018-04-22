@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Notes on Coder hacks</title>
+    <link>http://coderhack.com/note/</link>
+    <description>Recent content in Notes on Coder hacks</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Tue, 26 Sep 2017 11:27:27 -0400</lastBuildDate>
+    
+	<atom:link href="http://coderhack.com/note/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Autonomous Car: Advanced lane detection</title>
+      <link>http://coderhack.com/note/advanced-lane-detection/</link>
+      <pubDate>Tue, 26 Sep 2017 11:27:27 -0400</pubDate>
+      
+      <guid>http://coderhack.com/note/advanced-lane-detection/</guid>
+      <description>Advanced lane finding Advanced Lane Finding Project
+The goals / steps of this project are the following:
+ Compute the camera calibration matrix and distortion coefficients given a set of chessboard images. Apply a distortion correction to raw images. Use color transforms, gradients, etc., to create a thresholded binary image. Apply a perspective transform to rectify binary image (&amp;ldquo;birds-eye view&amp;rdquo;). Detect lane pixels and fit to find the lane boundary.</description>
+    </item>
+    
+    <item>
+      <title>ESP 8266 based water controller</title>
+      <link>http://coderhack.com/note/home-automation-iot-node-red/</link>
+      <pubDate>Sat, 22 Apr 2017 18:29:59 +0530</pubDate>
+      
+      <guid>http://coderhack.com/note/home-automation-iot-node-red/</guid>
+      <description>Home automation series part 1 As summers are nearing, wanted to go on vacation, now that I have couple of plants that need to be watered when I am on the move.. thought its a good usecase to be automated.
+One option is to have timer which can switch on a valve once in a day, however due to power interruption It might loose track unless I build a battery backup for the controller.</description>
+    </item>
+    
+    <item>
+      <title>Docker getting started</title>
+      <link>http://coderhack.com/note/docker-getting-started/</link>
+      <pubDate>Tue, 14 Apr 2015 00:00:00 +0000</pubDate>
+      
+      <guid>http://coderhack.com/note/docker-getting-started/</guid>
+      <description>Docker experiment to build hello world image from scratch. Instead of using shell script, C based application is used to make it comparable to custom application package/distribution.
+ Creating minimal docker image what you need :
+ docker installed on linux variant (tested on Ubuntu 14LTS)
+ gcc for making minimal application
+  docker can import archives such as tar, tar.gz, .bzip etc. you can package all necessary files into an archive and import it into docker.</description>
+    </item>
+    
+  </channel>
+</rss>
