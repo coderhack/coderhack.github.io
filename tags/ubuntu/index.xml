@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Ubuntu on Coder hacks</title>
+    <title>Ubuntu on Coderhacks</title>
     <link>http://coderhack.com/tags/ubuntu/</link>
-    <description>Recent content in Ubuntu on Coder hacks</description>
+    <description>Recent content in Ubuntu on Coderhacks</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Tue, 14 Apr 2015 00:00:00 +0000</lastBuildDate>
@@ -13,10 +13,10 @@
     
     <item>
       <title>Docker getting started</title>
-      <link>http://coderhack.com/note/docker-getting-started/</link>
+      <link>http://coderhack.com/notes/docker-getting-started/</link>
       <pubDate>Tue, 14 Apr 2015 00:00:00 +0000</pubDate>
       
-      <guid>http://coderhack.com/note/docker-getting-started/</guid>
+      <guid>http://coderhack.com/notes/docker-getting-started/</guid>
       <description>Docker experiment to build hello world image from scratch. Instead of using shell script, C based application is used to make it comparable to custom application package/distribution.
  Creating minimal docker image what you need :
  docker installed on linux variant (tested on Ubuntu 14LTS)

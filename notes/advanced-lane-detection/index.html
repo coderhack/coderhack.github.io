@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="renderer" content="webkit">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  
+  <title>Autonomous Car: Advanced lane detection - Coderhacks</title>
+  
+  <meta name="description" content="The goals / steps of this project are the following:
+ Compute the camera calibration matrix and distortion coefficients given a set of chessboard images. Apply a distortion correction to raw images. Use color transforms, gradients, etc., to create a thresholded binary image. Apply a perspective transform to rectify binary image (&ldquo;birds-eye view&rdquo;). Detect lane pixels and fit to find the lane boundary. Determine the curvature of the lane and vehicle position with respect to center.">
+  <meta name="author" content="">
+  
+  <link href="https://fonts.googleapis.com/css?family=PT+Sans:400,400i,700,700i" rel="stylesheet">
+  <link href="https://cdn.bootcss.com/highlight.js/9.12.0/styles/default.min.css" rel="stylesheet">
+  <link href="/css/style.css" rel="stylesheet">
+  
+  <link rel="apple-touch-icon" href="/img/apple-touch-icon.png">
+  <link rel="icon" href="/img/favicon.ico">
+  
+  <meta name="generator" content="Hugo 0.39">
+  
+  <link rel="alternate" type="application/atom+xml" href="/index.xml" title="Coderhacks">
+</head>
+<body class="single">
+  <header class="header">
+    
+    <p class="title"><a href="/"><span>Coderhacks</span></a></p>
+    
+    <button class="menu-toggle" type="button"></button>
+    <nav class="menu">
+      <ul>
+        
+        
+      </ul>
+    </nav>
+  </header>
+  <main class="main">
+
+<article class="post post-view">
+  <header class="post-header">
+    <h1 class="post-title">Autonomous Car: Advanced lane detection</h1>
+    <p class="post-meta">26 Sep 2017</p>
+  </header>
+  <div class="post-content">
+
+<hr />
+
+<p>The goals / steps of this project are the following:</p>
+
+<ul>
+<li>Compute the camera calibration matrix and distortion coefficients given a set of chessboard images.</li>
+<li>Apply a distortion correction to raw images.</li>
+<li>Use color transforms, gradients, etc., to create a thresholded binary image.</li>
+<li>Apply a perspective transform to rectify binary image (&ldquo;birds-eye view&rdquo;).</li>
+<li>Detect lane pixels and fit to find the lane boundary.</li>
+<li>Determine the curvature of the lane and vehicle position with respect to center.</li>
+<li>Warp the detected lane boundaries back onto the original image.</li>
+<li>Output visual display of the lane boundaries and numerical estimation of lane curvature and vehicle position.</li>
+</ul>
+
+<p>Here I will consider the rubric points individually and describe how I addressed each point in my implementation.</p>
+
+<hr />
+
+<h4 id="this-writeup-will-describe-the-steps-taken-to-find-lane-lines-and-challenges-faced">This writeup will describe the steps taken to find lane lines and challenges faced.</h4>
+
+<h3 id="camera-calibration">Camera Calibration</h3>
+
+<p>When images taken from camera lens, it involves lens distortion due to
+varying angle of light in edge of lens. However by taking couple of sample
+images we can get the conversion matrix / coefficients for removing the
+distortion. First we will take couple of images of chess board or equivalent
+and see how it is distorted. By as we know chess board will have squares
+in it and distorted images skew the squares. We can use OpenCV
+function <code>findChessboardCorners</code> to find the corners of chess board.
+When we map those to our chess board coordinate system with <code>calibrateCamera</code></p>
+
+<p>I started with following image:</p>
+
+<p><img src="/images/chess_board_box_detection.png" alt="Chess board box detection" /></p>
+
+<p><img src="/images/distorted_image.png" alt="Distorted Image" /></p>
+
+<p>The code for this step is contained in the 3rd code cell of the IPython notebook located in &ldquo;AdvancedLaneDetection.ipynb&rdquo;</p>
+
+<p>I start by preparing &ldquo;object points&rdquo;, which will be the (x, y, z) coordinates
+ of the chessboard corners in the world. Here I am assuming the chessboard
+ is fixed on the (x, y) plane at z=0, such that the object points are the
+ same for each calibration image.  Thus, <code>objp</code> is just a replicated array
+ of coordinates, and <code>objpoints</code> will be appended with a copy of it every
+ time I successfully detect all chessboard corners in a test image.  <code>imgpoints</code>
+ will be appended with the (x, y) pixel position of each of the corners in
+ the image plane with each successful chessboard detection.</p>
+
+<p>I then used the output <code>objpoints</code> and <code>imgpoints</code> to compute the camera
+calibration and distortion coefficients using the <code>cv2.calibrateCamera()</code>
+function.  I applied this distortion correction to the test image using
+the <code>cv2.undistort()</code> function and obtained this result:</p>
+
+<p><img src="/images/undistorted_image.png" alt="Undistorted image" /></p>
+
+<p>Here is both side by side for reference:</p>
+
+<p><img src="/images/camera_distortion.png" alt="Comparing undistortion" /></p>
+
+<h3 id="pipeline-single-image">Pipeline (single image)</h3>
+
+<h4 id="1-provide-an-example-of-a-distortion-corrected-image">1. Provide an example of a distortion-corrected image.</h4>
+
+<p>To demonstrate this step, I will describe how I apply the distortion correction to one of the test images like this one:</p>
+
+<p><img src="/images/sample_distortion_correction.png" alt="Distortion correction" /></p>
+
+<h4 id="2-transformation-and-binarized-image">2. Transformation and binarized image</h4>
+
+<p>I used a combination of color in HLS and R channel threshold and gradient thresholds to generate a binary image (thresholding steps at lines # through # in the notebook).
+Here&rsquo;s an example of my output for this step.  (note: this is not actually from one of the test images)</p>
+
+<p><img src="/images/binary_image.png" alt="Binary Image" /></p>
+
+<h4 id="3-now-lets-see-same-image-transformed-as-if-its-viewed-from-top">3. Now lets see same image transformed as if its viewed from top</h4>
+
+<p>The code for my perspective transform includes a function called <code>warp()</code> that takes as inputs an image (<code>img</code>), as well as source (<code>src</code>) and destination (<code>dst</code>) points.  I chose the hardcode the source and destination points in the following manner:</p>
+
+<pre><code class="language-python">def warp(img, M):
+    img_size = (img.shape[1], img.shape[0])
+    return cv2.warpPerspective(img, M, img_size, flags=cv2.INTER_LINEAR)
+    
+</code></pre>
+
+<p>Following source and destination points were used by observing the image:</p>
+
+<table>
+<thead>
+<tr>
+<th>Source</th>
+<th>Destination</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>244, 687</td>
+<td>492, 687</td>
+</tr>
+
+<tr>
+<td>1054, 679</td>
+<td>790, 679</td>
+</tr>
+
+<tr>
+<td>750, 490</td>
+<td>790, 490</td>
+</tr>
+
+<tr>
+<td>541, 489</td>
+<td>492, 489</td>
+</tr>
+</tbody>
+</table>
+
+<p>I verified that my perspective transform was working as expected by drawing the <code>src</code> and <code>dst</code> points onto a test
+image and its warped counterpart to verify that the lines appear parallel in the warped image.</p>
+
+<p><img src="/images/transformation_points.png" alt="Transformation points" /></p>
+
+<p><img src="/images/warped_image.png" alt="Warped image" /></p>
+
+<p>Belor is another possible transformation that I tried before, however this was covering more than our interested area so modified
+ transformation mapping to pick the road lane.</p>
+
+<p><img src="/images/transformed_image.png" alt="One more sample transformation" /></p>
+
+<h4 id="4-polynomial-fitting-the-lane-pixels">4. Polynomial fitting the lane pixels</h4>
+
+<p>In order to find the lane line I took botom portion of image and calculated histogram on binary image. Choosing max
+on left and right side gave position of lane line. From there a sliding window was used to fit the line.</p>
+
+<p><img src="/images/lane_marking.png" alt="Lane marking" /></p>
+
+<h4 id="5-radius-of-curvature-of-road">5. Radius of curvature of road.</h4>
+
+<p>In order to compute the radius of curvature of the road aproximating the length of road in view as 50 meters and width of
+road lane as 3.5 meters. Our transformed road lane is measuring about 700 pixel wide and 720 pixel in run length.</p>
+
+<pre><code class="language-python">ym_per_pix = 50/720.0 # meters per pixel in y dimension
+xm_per_pix = 3.7/700.0 # meters per pixel in x dimension
+
+left_fit_cr = np.polyfit(xy[0]*ym_per_pix, xy[1]*xm_per_pix, 2)
+right_fit_cr = np.polyfit(xy[2]*ym_per_pix, xy[3]*xm_per_pix, 2)
+
+y_eval = txbinary.shape[0]
+
+left_curverad = ((1 + (2*left_fit_cr[0]*y_eval*ym_per_pix + left_fit_cr[1])**2)**1.5) / np.absolute(2*left_fit_cr[0])
+right_curverad = ((1 + (2*right_fit_cr[0]*y_eval*ym_per_pix + right_fit_cr[1])**2)**1.5) / np.absolute(2*right_fit_cr[0])
+# Now our radius of curvature is in meters
+print(left_curverad, 'm', right_curverad, 'm')
+</code></pre>
+
+<p>To calculate the car position in lane, I used mapping pixel to meter. Difference between center of car from detected
+ lane positions and center of camera will give the offset position.</p>
+
+<pre><code class="language-python">def offset(txbinary, xy):
+    xm_per_pix = 3.7/700.0
+    return ((xy[1][0] + (xy[3][0] - xy[1][0] )/2) - txbinary.shape[1]/2 )* xm_per_pix
+
+</code></pre>
+
+<h4 id="6-provide-an-example-image-of-your-result-plotted-back-down-onto-the-road-such-that-the-lane-area-is-identified-clearly">6. Provide an example image of your result plotted back down onto the road such that the lane area is identified clearly.</h4>
+
+<p>I implemented this step in the function <code>plotThePath()</code>.  Here is an example of my result on a test image:</p>
+
+<p><img src="/images/example_path.png" alt="Path drawn" /></p>
+
+<p><img src="/images/test_images_processed.png" alt="images processed" /></p>
+
+<hr />
+
+<h3 id="pipeline-video">Pipeline (video)</h3>
+
+<h4 id="1-running-above-pipeline-on-image-frame-by-frame-on-video-taken-while-driving">1. Running above pipeline on image frame by frame on video taken while driving.</h4>
+
+<p>Here&rsquo;s a <a href="https://youtu.be/k1ioYMEjvmQ">Processed Video</a></p>
+
+<hr />
+
+<h3 id="discussion">Discussion</h3>
+
+<p>Here I&rsquo;ll talk about the approach I took, what techniques I used, what worked and why, where the pipeline might fail and how I might improve it if I were going to pursue this project further.</p>
+
+<ul>
+<li><p>In nutshell, pipeline consists of following steps</p>
+
+<ul>
+<li>fix lens distortion</li>
+<li>use color space with threshold to extract the lane lines</li>
+<li>Convert to binary using gradients on x and y</li>
+<li>transform the image as if its viewed by top</li>
+<li>Using window size of 100, 9 windows fit the line on image and find coefficient</li>
+
+<li><p>Finally mark the lane boundaries on image.</p>
+
+<h2 id="possible-failures">Possible failures</h2></li>
+</ul></li>
+
+<li><p>Found problem in processing shadows, different colored pavement, in order to cover such scenarios I had to use S and Red channels</p></li>
+
+<li><p>Processing is sensitive to other marking that may be found on road. Probably using last found line position and searching from there would solve this issue.</p>
+
+<h2 id="potential-improvements">Potential improvements</h2></li>
+
+<li><p>Hold the state and write confidence score based on information that is available. For example left and right should run
+parallel if they vary in direction or curvature we can either reject or take weighted average.</p></li>
+
+<li><p>Retain the lane position and start searching for same position in next frame, a sliding window would help in adjusting
+actual position.</p></li>
+
+<li><p>Possibly use canny edge in lower portion to start window search, this may help in ignoring other signs on the road.</p></li>
+</ul>
+</div>
+  <footer class="post-footer">
+    
+    <ul class="post-tags">
+      
+      <li><a href="/tags/development/">Development</a></li>
+      
+      <li><a href="/tags/autonomous-car/">autonomous car</a></li>
+      
+      <li><a href="/tags/opencv/">opencv</a></li>
+      
+    </ul>
+    
+  </footer>
+  
+</article>
+</main>
+<footer class="footer">
+  <span>&copy; 2017-2018 Coderhacks</span>
+</footer>
+<script src="https://cdn.bootcss.com/instantclick/3.0.1/instantclick.min.js" data-no-instant></script>
+<script data-no-instant>InstantClick.init();</script>
+<script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js" data-no-instant></script>
+<script data-no-instant>
+  hljs.initHighlightingOnLoad();
+  menuToggle();
+  InstantClick.on('change', function() {
+    var blocks = document.querySelectorAll('pre code');
+    for (var i = 0; i < blocks.length; i++) {
+      hljs.highlightBlock(blocks[i]);
+    }
+    menuToggle();
+  });
+  function menuToggle() {
+    var $toggle = document.querySelector('.menu-toggle');
+    if (!$toggle.offsetParent) {
+      return;
+    }
+    var $body = document.querySelector('body');
+    $toggle.addEventListener('click', function() {
+      $body.classList.toggle('noscroll');
+    }, false);
+  }
+</script>
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-98611610-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-98611610-1');
+</script>
+
+</body>
+</html>
+

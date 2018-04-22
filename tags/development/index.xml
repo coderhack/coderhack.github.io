@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Development on Coder hacks</title>
+    <title>Development on Coderhacks</title>
     <link>http://coderhack.com/tags/development/</link>
-    <description>Recent content in Development on Coder hacks</description>
+    <description>Recent content in Development on Coderhacks</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Tue, 26 Sep 2017 11:27:27 -0400</lastBuildDate>
@@ -13,13 +13,12 @@
     
     <item>
       <title>Autonomous Car: Advanced lane detection</title>
-      <link>http://coderhack.com/note/advanced-lane-detection/</link>
+      <link>http://coderhack.com/notes/advanced-lane-detection/</link>
       <pubDate>Tue, 26 Sep 2017 11:27:27 -0400</pubDate>
       
-      <guid>http://coderhack.com/note/advanced-lane-detection/</guid>
-      <description>Advanced lane finding Advanced Lane Finding Project
-The goals / steps of this project are the following:
- Compute the camera calibration matrix and distortion coefficients given a set of chessboard images. Apply a distortion correction to raw images. Use color transforms, gradients, etc., to create a thresholded binary image. Apply a perspective transform to rectify binary image (&amp;ldquo;birds-eye view&amp;rdquo;). Detect lane pixels and fit to find the lane boundary.</description>
+      <guid>http://coderhack.com/notes/advanced-lane-detection/</guid>
+      <description>The goals / steps of this project are the following:
+ Compute the camera calibration matrix and distortion coefficients given a set of chessboard images. Apply a distortion correction to raw images. Use color transforms, gradients, etc., to create a thresholded binary image. Apply a perspective transform to rectify binary image (&amp;ldquo;birds-eye view&amp;rdquo;). Detect lane pixels and fit to find the lane boundary. Determine the curvature of the lane and vehicle position with respect to center.</description>
     </item>
     
   </channel>
